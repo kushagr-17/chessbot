@@ -10,7 +10,7 @@ The 0x88 board representation encodes the chessboard into a 1D array of 128 elem
 
 - This allows ultra-fast boundary checking
 
- Only the half of the board-array are valid squares representing the position. The second half is almost garbage as usually not addressed. The little-endian layout of an 0x88 array, valid indices bold:
+ Only the half of the board-array are valid squares representing the position. The second half is almost garbage as usually not addressed. The little-endian layout of an 0x88 array, valid indices bold (under marked columns):
 
 |   | A      | B      | C      | D      | E      | F      | G      | H      |    |    |    |    |    |    |    |    |
 | - | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | -- | -- | -- | -- | -- | -- | -- | -- |
