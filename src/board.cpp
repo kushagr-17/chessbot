@@ -1,65 +1,73 @@
-#include "Board.h"
+#include "board.h"
 #include "defs.h"
 #include <iostream>
 #include <sstream>
 #include <cctype>
+#include <vector>
+#include <string>
+#include "utils.h"
+#include "move.h"
 
 Board::Board() {
     for(int i=0;i<128;i++){
-        if(i & 0x88){
-            squares[i] = OFFBOARD; 
-        }
-        else{
-            squares[i] = EMPTY;
-        }
+        squares[i] = (i & 0x88) ? OFFBOARD : EMPTY;
     }
+    sideToMove = WHITE;
+    castlingRights = 0;
+    epSquare = -1;
+    halfmoveClock = 0;
+    fullmoveNumber = 1;
 }
 
 void Board::loadFEN(const std::string& fen) {
+    for(int i=0;i<128;i++){
+        squares[i] = (i & 0x88) ? OFFBOARD : EMPTY;
+    }
+    sideToMove = WHITE; castlingRights = 0; epSquare = -1; halfmoveClock = 0; fullmoveNumber = 1;
+
     std::istringstream ss(fen);
-    std::string boardPart;
-    ss >> boardPart;
+    std::string boardPart, stm, castling, ep;
+    ss >> boardPart >> stm >> castling >> ep >> halfmoveClock >> fullmoveNumber;
 
-    int rank = 7;
-    int file = 0;
-
+    int sq = SQ(0,7);
     for(char c : boardPart){
         if(c == '/'){
-            rank--;
-            file = 0;
+            sq -= 24;
+            continue;
+        }  
+        if(std::isdigit((unsigned char)c)){
+            sq += c - '0';
+            continue;
         }
-        else if(isdigit(c)){
-            file += c - '0';
-        }
-        else{
-            int square = SQ_INDEX(file, rank);
+        squares[sq++] = charToPiece(c);
+    }
 
-            switch(c){
-                case 'P': squares[square] = WP; break;
-                case 'N': squares[square] = WN; break;
-                case 'B': squares[square] = WB; break;
-                case 'R': squares[square] = WR; break;
-                case 'Q': squares[square] = WQ; break;
-                case 'K': squares[square] = WK; break;
-                case 'p': squares[square] = BP; break;
-                case 'n': squares[square] = BN; break;
-                case 'b': squares[square] = BB; break;
-                case 'r': squares[square] = BR; break;
-                case 'q': squares[square] = BQ; break;
-                case 'k': squares[square] = BK; break;
-            }
-            file++;
-        }
+    sideToMove = (stm == "w") ? WHITE : BLACK;
+
+    if (castling.find('K') != std::string::npos) castlingRights |= WKCA;
+    if (castling.find('Q') != std::string::npos) castlingRights |= WQCA;
+    if (castling.find('k') != std::string::npos) castlingRights |= BKCA;
+    if (castling.find('q') != std::string::npos) castlingRights |= BQCA;
+
+    if(ep != "-" && ep.size() == 2){
+        int f = ep[0] - 'a';
+        int r = ep[1] - '1';
+        epSquare = SQ(f, r);
+    }
+    else{
+        epSquare = -1;
     }
 }
 
 void Board::print() const {
-    for(int rank=7;rank>=0;rank--){
-        for(int file=0;file<8;file++){
-            int square = SQ_INDEX(file, rank);
-            int piece = squares[square];
-            std::cout << PIECE_SYMBOLS[piece] << " ";
+    for(int r=7;r>=0;r--){
+        std::cout << (r+1) << " ";
+        for(int f=0;f<8;f++){
+            int sq = SQ(f, r);
+            int p = squares[sq];
+            std::cout << (p == EMPTY ? ". " : std::string(1, pieceToChar(p)) + " ");
         }
         std::cout << "\n";
     }
+    std::cout << "  a b c d e f g h\n";
 }

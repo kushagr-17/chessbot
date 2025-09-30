@@ -4,43 +4,42 @@
 #include <cstdint>
 #include <string>
 
-// Colors
-enum Color{ 
-    WHITE = 0, BLACK = 1, COLOR_NB = 2 
-};
+enum Color { WHITE = 0, BLACK = 1, COLOR_NB = 2 };
 
-// Pieces
 enum Piece {
     EMPTY = 0,
-    WP, WN, WB, WR, WQ, WK,
-    BP, BN, BB, BR, BQ, BK,
+    wP, wN, wB, wR, wQ, wK,
+    bP, bN, bB, bR, bQ, bK,
     PIECE_NB
 };
 
+// KCA - King side Castling
+// QCA - Queen side Castling
 enum Castling {
-    WKCA = 1,  // White King-side
-    WQCA = 2,  // White Queen-side
-    BKCA = 4,  // Black King-side
-    BQCA = 8   // Black Queen-side
+    WKCA = 1,  
+    WQCA = 2,  
+    BKCA = 4,  
+    BQCA = 8   
 };
 
-// (0x88) board
-enum Square {
-    A1=0, B1, C1, D1, E1, F1, G1, H1,
-    A2=16, B2, C2, D2, E2, F2, G2, H2,
-    A3=32, B3, C3, D3, E3, F3, G3, H3,
-    A4=48, B4, C4, D4, E4, F4, G4, H4,
-    A5=64, B5, C5, D5, E5, F5, G5, H5,
-    A6=80, B6, C6, D6, E6, F6, G6, H6,
-    A7=96, B7, C7, D7, E7, F7, G7, H7,
-    A8=112,B8, C8, D8, E8, F8, G8, H8, SQUARE_NB
-};
+#define IS_ONBOARD(sq) (!((sq) & 0x88))
+#define FILE_OF(sq)    ((sq) & 7)
+#define RANK_OF(sq)    ((sq) >> 4)
+#define SQ(file,rank)  (((rank) << 4) | (file))
 
-const int OFFBOARD = -1; 
+const int OFFBOARD = -1;
 
-#define IS_SQ_ON_BOARD(sq) (!((sq) & 0x88))
-#define SQ_INDEX(file, rank) ((rank) * 16 + (file))
+static const char PIECE_SYMBOLS[14] = ".PNBRQKpnbrqk";
 
-const char PIECE_SYMBOLS[14] = ".PNBRQKpnbrqk";
+static const int KN_OFF[8]  = { +33, +31, +18, +14, -14, -18, -31, -33 };
+static const int RK_OFF[4]  = { +1, -1, +16, -16 };
+static const int BSH_OFF[4] = { +15, +17, -15, -17 };
+static const int QN_OFF[8]  = { +1, -1, +16, -16, +15, +17, -15, -17 };
+
+static const int PAWN_PUSH[2]   = { +16, -16 };  
+static const int PAWN_CAPL[2]   = { +15, -17 };  
+static const int PAWN_CAPR[2]   = { +17, -15 };  
+static const int PAWN_START_RANK[2] = { 1, 6 }; 
+static const int PAWN_PROMO_RANK[2] = { 7, 0 };  
 
 #endif
