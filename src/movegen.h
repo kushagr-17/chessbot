@@ -6,5 +6,6 @@
 #include "move.h"
 
 void generatePseudoMoves(const Board& pos, std::vector<Move>& out);
+void generateLegalMoves(Board& pos, std::vector<Move>& out);
 
 #endif
