@@ -6,6 +6,16 @@
 #include "defs.h"
 #include "move.h"
 
+struct Undo {
+    int captured;        
+    int capturedSq;      
+    int epSquare_old;
+    int castling_old;
+    int halfmove_old;
+    int fullmove_old;
+    int from, to;
+};
+
 class Board {
 public:
     Board();
@@ -18,6 +28,11 @@ public:
     int getCastling() const { return castlingRights; }
 
     void generatePseudoMoves(std::vector<Move>& out) const;
+
+    void makeMove(const Move& m, Undo& st);
+    void undoMove(const Move& m, const Undo& st);
+
+    int kingSquare(Color c) const;
 
 private:
     int squares[128]; // 0x88 board representation

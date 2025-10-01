@@ -3,6 +3,70 @@
 #include "utils.h"
 #include <vector>
 
+bool isSquareAttacked(const Board& pos, int sq, Color bySide){
+    // Pawns
+    if(bySide == WHITE){
+        int l = sq - 15; 
+        int r = sq - 17;
+        if (IS_ONBOARD(l) && pos.at(l) == wP) return true;
+        if (IS_ONBOARD(r) && pos.at(r) == wP) return true;
+    }
+    else{
+        int l = sq + 17;
+        int r = sq + 15;
+        if (IS_ONBOARD(l) && pos.at(l) == bP) return true;
+        if (IS_ONBOARD(r) && pos.at(r) == bP) return true;
+    }
+
+    // Knights
+    for(int i=0;i<8;i++){
+        int to = sq + KN_OFF[i];
+        if (!IS_ONBOARD(to)) continue;
+        int p = pos.at(to);
+        if (bySide == WHITE && p == wN) return true;
+        if (bySide == BLACK && p == bN) return true;
+    }
+
+    // Bishops + Queens
+    for(int i=0;i<4;i++){
+        int to = sq;
+        while(true){
+            to += BSH_OFF[i];
+            if (!IS_ONBOARD(to)) break;
+            int p = pos.at(to);
+            if (isEmpty(p)) continue;
+            if (bySide == WHITE && (p == wB || p == wQ)) return true;
+            if (bySide == BLACK && (p == bB || p == bQ)) return true;
+            break;
+        }
+    }
+
+    // Rooks + Queens
+    for(int i=0;i<4;i++){
+        int to = sq;
+        while(true){
+            to += RK_OFF[i];
+            if (!IS_ONBOARD(to)) break;
+            int p = pos.at(to);
+            if (isEmpty(p)) continue;
+            if (bySide == WHITE && (p == wR || p == wQ)) return true;
+            if (bySide == BLACK && (p == bR || p == bQ)) return true;
+            break;
+        }
+    }
+
+    // King
+    for(int i=0;i<8;i++){
+        int to = sq + QN_OFF[i];
+        if (!IS_ONBOARD(to)) continue;
+        int p = pos.at(to);
+        if (bySide == WHITE && p == wK) return true;
+        if (bySide == BLACK && p == bK) return true;
+    }
+
+    return false;
+}
+
 static inline void addMove(std::vector<Move>& out, int from, int to, int piece, int captured, int promoted, int flags) {
     Move m; 
     m.from = from; m.to = to; m.piece = piece; m.captured = captured; m.promoted = promoted; m.flags = flags;
@@ -166,4 +230,28 @@ void generatePseudoMoves(const Board& pos, std::vector<Move>& out) {
         }
     }
     genCastling(pos, out, white ? WHITE : BLACK);
+}
+
+void generateLegalMoves(Board& pos, std::vector<Move>& out) {
+    std::vector<Move> pseudo;
+    generatePseudoMoves(pos, pseudo);
+
+    out.clear();
+    Undo st;
+
+    int kingSq = pos.kingSquare(pos.sideWhiteToMove() ? WHITE : BLACK);
+
+    for (const Move& m : pseudo){
+        pos.makeMove(m, st);
+
+        int ksq = (pos.at(m.to) == wK || pos.at(m.to) == bK) ? m.to : kingSq;
+
+        bool inCheck = isSquareAttacked(pos, ksq, pos.sideWhiteToMove() ? WHITE : BLACK);
+
+        pos.undoMove(m, st);
+
+        if(!inCheck){
+            out.push_back(m);
+        }
+    }
 }

@@ -14,8 +14,8 @@ int main() {
     board.print();
 
     std::vector<Move> mv;
-    generatePseudoMoves(board, mv);
-    std::cout << "Pseudo-legal moves: " << mv.size() << "\n";
+    generateLegalMoves(board, mv);
+    std::cout << "Legal moves: " << mv.size() << "\n";
     for(size_t i=0;i<mv.size() && i<20;i++){
         std::cout << moveToStr(mv[i]) << " ";
     }
