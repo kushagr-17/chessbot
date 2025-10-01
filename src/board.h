@@ -27,8 +27,6 @@ public:
     int getEPSq() const { return epSquare; }
     int getCastling() const { return castlingRights; }
 
-    void generatePseudoMoves(std::vector<Move>& out) const;
-
     void makeMove(const Move& m, Undo& st);
     void undoMove(const Move& m, const Undo& st);
 
