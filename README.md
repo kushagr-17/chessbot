@@ -83,3 +83,4 @@ g++ -std=c++17 main.cpp board.cpp utils.cpp movegen.cpp perft.cpp -o chessbot
 - [r/chessprogramming](https://www.reddit.com/r/chessprogramming)
 - [Stockfish's official Github](https://github.com/official-stockfish/Stockfish)
 - [Major Carry Job](https://chatgpt.com)
+- [Evaluation Function](https://hxim.github.io/Stockfish-Evaluation-Guide)
