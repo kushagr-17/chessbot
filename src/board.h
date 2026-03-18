@@ -32,6 +32,8 @@ public:
 
     int kingSquare(Color c) const;
 
+    bool isValid() const;
+
 private:
     int squares[128]; // 0x88 board representation
     Color sideToMove;

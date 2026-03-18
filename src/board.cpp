@@ -19,6 +19,24 @@ Board::Board() {
     fullmoveNumber = 1;
 }
 
+bool Board::isValid() const {
+    bool whiteKing = false, blackKing = false;
+
+    for(int sq = 0; sq < 128; sq++){
+        if(!IS_ONBOARD(sq)) continue;
+        int p = squares[sq];
+        if(p == wK){
+            whiteKing = true;
+        }
+        else if(p == bK){
+            blackKing = true;
+        }
+    }
+
+    // Return true if both kings exist
+    return whiteKing && blackKing;
+}
+
 void Board::loadFEN(const std::string& fen) {
     for(int i=0;i<128;i++){
         squares[i] = (i & 0x88) ? OFFBOARD : EMPTY;
