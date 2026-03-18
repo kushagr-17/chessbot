@@ -8,4 +8,6 @@
 void generatePseudoMoves(const Board& pos, std::vector<Move>& out);
 void generateLegalMoves(Board& pos, std::vector<Move>& out);
 
+bool isSquareAttacked(const Board& pos, int sq, Color bySide);
+
 #endif
